@@ -59,7 +59,7 @@ public class LexicalAnalyzer {
     }
 
     private void eatSymbolId() {
-        while (index < input.length() && input.substring(index, index+1).matches("[a-zA-Z0-9_]")) {
+        while (index < input.length() && Character.isLetter(input.charAt(index))) {
             index++;
         }
     }
@@ -75,48 +75,82 @@ public class LexicalAnalyzer {
         // 总之实现过程能转化为一列表即可
         ArrayList<Token> res = new ArrayList<>();
         while (index < input.length()) {
+//            System.out.println("index " + index + " char " + input.charAt(index));
             if (input.substring(index, index+1).matches("[ \t\n\r]")) {
+                // skip all blank
                 skipNoneToken();
                 continue;
             }
-            if (input.substring(index, index+1).matches("[*]|[/]|[+]|[-]|[,=]|[(]|[)]")) {
-                res.add(Token.simple(TokenKind.fromString(input.substring(index, index+1))));
-                index++;
-                continue;
+            switch (input.charAt(index)) {
+                case '+':
+                    res.add(Token.simple(TokenKind.fromString("+")));
+                    index++;
+                    break;
+                case '-':
+                    res.add(Token.simple(TokenKind.fromString("-")));
+                    index++;
+                    break;
+                case '*':
+                    res.add(Token.simple(TokenKind.fromString("*")));
+                    index++;
+                    break;
+                case '/':
+                    res.add(Token.simple(TokenKind.fromString("/")));
+                    index++;
+                    break;
+                case '(':
+                    res.add(Token.simple(TokenKind.fromString("(")));
+                    index++;
+                    break;
+                case ')':
+                    res.add(Token.simple(TokenKind.fromString(")")));
+                    index++;
+                    break;
+                case '=':
+                    res.add(Token.simple(TokenKind.fromString("=")));
+                    index++;
+                    break;
+                case ';':
+                    res.add(Token.simple(TokenKind.fromString("Semicolon")));
+                    index++;
+                    break;
+                case 'i':
+                    if (index < input.length() - 2 && "int".equals(input.substring(index, index+3)) &&
+                            (index == input.length() - 3 || !Character.isLetter(input.charAt(index+3)))) {
+                        // if the token is 'int'
+                        res.add(Token.simple(TokenKind.fromString("int")));
+                        index += 3;
+                        break;
+                    }
+                    // else go to default
+                case 'r':
+                    if (index < input.length() - 5 && "return".equals(input.substring(index, index+6)) &&
+                            (index == input.length() - 6 || !Character.isLetter(input.charAt(index+6)))) {
+                        // if the token is 'return'
+                        res.add(Token.simple(TokenKind.fromString("return")));
+                        index += 6;
+                        break;
+                    }
+                    // else go to default
+                default:
+                    if (Character.isLetter(input.charAt(index))) {
+                        // the token is id
+                        int startIndex = index;
+                        eatSymbolId();
+                        res.add(Token.normal(TokenKind.fromString("id"), input.substring(startIndex, index)));
+                        if (!symbolTable.has(input.substring(startIndex, index))) {
+                            symbolTable.add(input.substring(startIndex, index));
+                        }
+                    } else if (Character.isDigit(input.charAt(index))) {
+                        // the token is intConst
+                        int startIndex = index;
+                        eatIntConst();
+                        res.add(Token.normal(TokenKind.fromString("IntConst"), input.substring(startIndex, index)));
+                    } else {
+                        System.out.println("index " + index + " char " + input.charAt(index));
+                        throw new RuntimeException("syntax error");
+                    }
             }
-            if (input.charAt(index) == ';') {
-                res.add(Token.simple(TokenKind.fromString("Semicolon")));
-                index++;
-                continue;
-            }
-            if (Character.isDigit(input.charAt(index))) {
-                int startIndex = index;
-                eatIntConst();
-                res.add(Token.normal(TokenKind.fromString("IntConst"), input.substring(startIndex, index)));
-                continue;
-            }
-            if (input.substring(index).matches("int[^A-Za-z0-9_][\\s\\S]*")) {
-                res.add(Token.simple(TokenKind.fromString("int")));
-                index += 3;
-                continue;
-            }
-            if (input.substring(index).matches("return[^A-Za-z0-9_][\\s\\S]*")) {
-                res.add(Token.simple(TokenKind.fromString("return")));
-                index += 6;
-                continue;
-            }
-            if (input.substring(index, index+1).matches("[a-zA-Z_]")) {
-                int startIndex = index;
-                eatSymbolId();
-                res.add(Token.normal(TokenKind.fromString("id"), input.substring(startIndex, index)));
-                if (!symbolTable.has(input.substring(startIndex, index))) {
-                    symbolTable.add(input.substring(startIndex, index));
-                }
-                continue;
-            }
-            System.out.println("index " + index + " char " + input.charAt(index));
-            System.out.println(input.substring(index));
-            throw new RuntimeException("unsupported syntax");
         }
         res.add(Token.eof());
         return res;

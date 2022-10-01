@@ -22,6 +22,7 @@ public class Main {
         TokenKind.loadTokenKinds();
         final var symbolTable = new SymbolTable();
 
+        System.out.println("hhhh");
         // 词法分析
         final var lexer = new LexicalAnalyzer(symbolTable);
         lexer.loadFile(FilePathConfig.SRC_CODE_PATH);
