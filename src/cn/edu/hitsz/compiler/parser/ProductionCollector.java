@@ -35,6 +35,7 @@ public class ProductionCollector implements ActionObserver {
     @Override
     public void whenReduce(Status currentStatus, Production production) {
         // 当规约时, 记录规约到的产生式
+//        System.out.println("collector callback when reduce");
         reducedProductions.add(production);
     }
 

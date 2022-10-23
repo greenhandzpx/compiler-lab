@@ -31,6 +31,7 @@ public class Main {
         final var tokens = lexer.getTokens();
         symbolTable.dumpTable(FilePathConfig.OLD_SYMBOL_TABLE);
 
+//        System.out.println(tokens);
         // 读取第三方程序构造的 LR 分析表
         final var tableLoader = new TableLoader();
         final var lrTable = tableLoader.load(FilePathConfig.LR1_TABLE_PATH);
@@ -49,6 +50,10 @@ public class Main {
         // 加入生成规约列表的 Observer
         final var productionCollector = new ProductionCollector(GrammarInfo.getBeginProduction());
         parser.registerObserver(productionCollector);
+
+//        // 执行语法解析并在解析过程中依次调用各 Observer
+//        parser.run();
+//        productionCollector.dumpToFile(FilePathConfig.PARSER_PATH);
 
         // 加入用作语义检查的 Observer
         final var semanticAnalyzer = new SemanticAnalyzer();

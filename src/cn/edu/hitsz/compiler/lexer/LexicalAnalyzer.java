@@ -73,6 +73,7 @@ public class LexicalAnalyzer {
         // 词法分析过程可以使用 Stream 或 Iterator 实现按需分析
         // 亦可以直接分析完整个文件
         // 总之实现过程能转化为一列表即可
+        index = 0;
         ArrayList<Token> res = new ArrayList<>();
         while (index < input.length()) {
 //            System.out.println("index " + index + " char " + input.charAt(index));
