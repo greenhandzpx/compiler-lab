@@ -2,15 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b859e796-51ed-4bb1-a185-3e540380b338" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/table/Symbol.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/lexer/LexicalAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/lexer/LexicalAnalyzer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/IRGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/IRGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/ProductionCollector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/ProductionCollector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/SemanticAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/SemanticAnalyzer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/SyntaxAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/parser/SyntaxAnalyzer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/symtab/SourceCodeType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/symtab/SourceCodeType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/asm/RV32Register.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/asm/RegisterManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/utils/BMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/std/intermediate_code.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/std/intermediate_code.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/asm/AssemblyGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/asm/AssemblyGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/ir/IRImmediate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/ir/IRImmediate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/ir/Instruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/edu/hitsz/compiler/ir/Instruction.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +20,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -46,6 +47,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
@@ -90,6 +92,7 @@
       <workItem from="1666450217671" duration="116000" />
       <workItem from="1666450360234" duration="1655000" />
       <workItem from="1666489566942" duration="165000" />
+      <workItem from="1667368936867" duration="12705000" />
     </task>
     <servers />
   </component>

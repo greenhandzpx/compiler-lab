@@ -19,7 +19,7 @@ public class IRImmediate implements IRValue {
         return Integer.toString(value);
     }
 
-    private IRImmediate(int value) {
+    public IRImmediate(int value) {
         this.value = value;
     }
 }

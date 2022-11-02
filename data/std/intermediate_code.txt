@@ -8,4 +8,3 @@
 (MUL, $4, $2, $3)
 (SUB, $5, $1, $4)
 (MOV, result, $5)
-(RET, , result)

@@ -1,9 +1,8 @@
 package cn.edu.hitsz.compiler.ir;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import cn.edu.hitsz.compiler.asm.RV32Register;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,9 +58,20 @@ public class Instruction {
         return result;
     }
 
+    public void setResultReg(RV32Register reg) {
+        ensureKindMatch(Set.of(InstructionKind.ADD, InstructionKind.SUB, InstructionKind.MUL, InstructionKind.MOV));
+        resultRegister = reg;
+    }
+
+
     public IRValue getLHS() {
         ensureKindMatch(Set.of(InstructionKind.ADD, InstructionKind.SUB, InstructionKind.MUL));
         return operands.get(0);
+    }
+
+    public void setLHSReg(RV32Register reg) {
+        ensureKindMatch(Set.of(InstructionKind.ADD, InstructionKind.SUB, InstructionKind.MUL));
+        operandRegistersOrImms.set(0, IRVariable.named(reg.toString()));
     }
 
     public IRValue getRHS() {
@@ -69,14 +79,28 @@ public class Instruction {
         return operands.get(1);
     }
 
+    public void setRHSReg(RV32Register reg) {
+        ensureKindMatch(Set.of(InstructionKind.ADD, InstructionKind.SUB, InstructionKind.MUL));
+        operandRegistersOrImms.set(1, IRVariable.named(reg.toString()));
+    }
+
     public IRValue getFrom() {
         ensureKindMatch(Set.of(InstructionKind.MOV));
         return operands.get(0);
     }
 
+    public void setFromReg(RV32Register reg) {
+        ensureKindMatch(Set.of(InstructionKind.MOV));
+        operandRegistersOrImms.set(0, IRVariable.named(reg.toString()));
+    }
+
     public IRValue getReturnValue() {
         ensureKindMatch(Set.of(InstructionKind.RET));
         return operands.get(0);
+    }
+
+    public void setReturnValueReg(RV32Register reg) {
+        operandRegistersOrImms.set(0, IRVariable.named(reg.toString()));
     }
 
 
@@ -89,6 +113,44 @@ public class Instruction {
         return "(%s, %s, %s)".formatted(kindString, resultString, operandsString);
     }
 
+    public String toRV32String() {
+        String opString = null;
+        switch (kind) {
+            case ADD -> {
+                if (getRHS().isImmediate()) {
+                    opString = "addi";
+                } else {
+                    opString = "add";
+                }
+            }
+            case SUB -> opString = "sub";
+            case MUL -> {
+                if (getRHS().isImmediate()) {
+                    opString = "muli";
+                } else {
+                    opString = "mul";
+                }
+            }
+            case MOV -> {
+                if (getFrom().isImmediate()) {
+                    opString = "li";
+                } else {
+                    opString = "mv";
+                }
+            }
+            case RET -> {
+                if (getReturnValue().isImmediate()) {
+                    opString = "li";
+                } else {
+                    opString = "mv";
+                }
+            }
+        }
+        final var resultString = resultRegister == null ? "a0" : resultRegister.toString();
+        final var operandsString = operandRegistersOrImms.stream().map(Objects::toString).collect(Collectors.joining(", "));
+        return "\t%s %s, %s".formatted(opString, resultString, operandsString);
+    }
+
     public List<IRValue> getOperands() {
         return Collections.unmodifiableList(operands);
     }
@@ -97,11 +159,16 @@ public class Instruction {
         this.kind = kind;
         this.result = result;
         this.operands = operands;
+        this.operandRegistersOrImms = new ArrayList<>();
+        operandRegistersOrImms.addAll(operands);
     }
 
     private final InstructionKind kind;
     private final IRVariable result;
     private final List<IRValue> operands;
+    private RV32Register resultRegister = null;
+    private final List<IRValue> operandRegistersOrImms;
+
 
     private void ensureKindMatch(Set<InstructionKind> targetKinds) {
         final var kind = getKind();

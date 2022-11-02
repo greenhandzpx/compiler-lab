@@ -1,8 +1,12 @@
 package cn.edu.hitsz.compiler.asm;
 
 import cn.edu.hitsz.compiler.NotImplementedException;
+import cn.edu.hitsz.compiler.ir.IRImmediate;
+import cn.edu.hitsz.compiler.ir.IRVariable;
 import cn.edu.hitsz.compiler.ir.Instruction;
+import cn.edu.hitsz.compiler.utils.FileUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,6 +26,8 @@ import java.util.List;
  */
 public class AssemblyGenerator {
 
+    private List<Instruction> irList;
+    private List<Instruction> processedIrList;
     /**
      * 加载前端提供的中间代码
      * <br>
@@ -32,9 +38,47 @@ public class AssemblyGenerator {
      */
     public void loadIR(List<Instruction> originInstructions) {
         // TODO: 读入前端提供的中间代码并生成所需要的信息
-        throw new NotImplementedException();
+        irList = originInstructions;
     }
 
+    List<Instruction> preProcess() {
+        ArrayList<Instruction> res = new ArrayList<>();
+        for (Instruction ir: irList) {
+            if (ir.getKind().isReturn() || ir.getKind().isUnary()) {
+                // TODO
+                res.add(ir);
+                continue;
+            }
+            if (ir.getKind().isBinary()) {
+                if (ir.getLHS().isIRVariable()) {
+                    // add a, b, c
+                    // add a, b, 1
+                    res.add(ir);
+                    continue;
+                }
+                if (ir.getRHS().isIRVariable()) {
+                    // add a, 1, c
+                    switch (ir.getKind()) {
+                        case ADD -> res.add(Instruction.createAdd(ir.getResult(), ir.getRHS(), ir.getLHS()));
+                        case SUB -> {
+                            Instruction tmpIr = Instruction.createMov(IRVariable.temp(), ir.getLHS());
+                            res.add(tmpIr);
+                            res.add(Instruction.createSub(ir.getResult(), tmpIr.getResult(), ir.getRHS()));
+                        }
+                        case MUL -> res.add(Instruction.createMul(ir.getResult(), ir.getRHS(), ir.getLHS()));
+                        default -> throw new RuntimeException();
+                    }
+                } else {
+                    // add a, 1, 2
+                    int lhs = ((IRImmediate) ir.getLHS()).getValue();
+                    int rhs = ((IRImmediate) ir.getRHS()).getValue();
+                    res.add(Instruction.createMov(ir.getResult(), new IRImmediate(lhs + rhs)));
+                }
+            }
+        }
+        processedIrList = res;
+        return res;
+    }
 
     /**
      * 执行代码生成.
@@ -47,7 +91,36 @@ public class AssemblyGenerator {
      */
     public void run() {
         // TODO: 执行寄存器分配与代码生成
-        throw new NotImplementedException();
+        List<Instruction> processedIR = preProcess();
+        System.out.println("preprocessed:");
+        for (Instruction ir: processedIR) {
+            System.out.println(ir);
+        }
+        RegisterManager registerManager = new RegisterManager();
+        registerManager.loadIR(processedIR);
+        for (Instruction ir: processedIR) {
+            switch (ir.getKind()) {
+                case RET -> {
+                    if (ir.getReturnValue().isIRVariable()) {
+                        ir.setReturnValueReg(registerManager.allocateRegister((IRVariable) ir.getReturnValue()));
+                    }
+                }
+                case ADD, MUL, SUB -> {
+                    ir.setResultReg(registerManager.allocateRegister(ir.getResult()));
+                    ir.setLHSReg(registerManager.allocateRegister((IRVariable) ir.getLHS()));
+                    if (ir.getRHS().isIRVariable()) {
+                        ir.setRHSReg(registerManager.allocateRegister((IRVariable) ir.getRHS()));
+                    }
+                }
+                case MOV -> {
+                    ir.setResultReg(registerManager.allocateRegister(ir.getResult()));
+                    if (ir.getFrom().isIRVariable()) {
+                        ir.setFromReg(registerManager.allocateRegister((IRVariable) ir.getFrom()));
+                    }
+                }
+            }
+            registerManager.step();
+        }
     }
 
 
@@ -58,7 +131,10 @@ public class AssemblyGenerator {
      */
     public void dump(String path) {
         // TODO: 输出汇编代码到文件
-        throw new NotImplementedException();
+        ArrayList<String> res = new ArrayList<>();
+        res.add(".text");
+        res.addAll(processedIrList.stream().map(Instruction::toRV32String).toList());
+        FileUtils.writeLines(path, res);
     }
 }
 
